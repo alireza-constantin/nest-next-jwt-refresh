@@ -9,12 +9,13 @@ export class AuthController {
 
     @Post('/signup')
     signup(@Body() dto: AuthDto): Promise<Tokens>{
-        return this.authService.signin(dto)
+        console.log(dto)
+        return this.authService.signup(dto)
     }
 
     @Post('/signin')
     signin() { 
-        this.authService.signup()
+        this.authService.signin()
      }
 
     @Post('/logout')
