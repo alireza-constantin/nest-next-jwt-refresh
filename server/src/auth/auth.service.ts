@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt'
-import { Tokens } from './types';
+import { Tokens, getMeUser, jwtPayloadWithRt } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -23,7 +23,7 @@ export class AuthService {
 
         await this.updateRefreshTokenHash(newUser.id, tokens.refreshToken)
 
-        return tokens 
+        return tokens
     }
 
     async signin(dto: AuthDto): Promise<Tokens> {
@@ -33,20 +33,64 @@ export class AuthService {
             }
         })
 
-        if(!user) throw new ForbiddenException('Invalid Credentials')
+        if (!user) throw new ForbiddenException('Invalid Credentials')
 
         const isPasswordValid = await bcrypt.compare(dto.password, user.hash)
 
-        if(!isPasswordValid) throw new ForbiddenException('Invalid Credentials') 
+        if (!isPasswordValid) throw new ForbiddenException('Invalid Credentials')
 
         const tokens = await this.getTokens(user.id, user.email)
         await this.updateRefreshTokenHash(user.id, tokens.refreshToken)
 
-        return tokens 
+        return tokens
     }
-    logout() { }
-    refreshToken() { }
+    async logout(userId: number) {
+        this.prisma.user.updateMany({
+            where: {
+                id: userId,
+                hashedRt: {
+                    not: null
+                }
+            },
+            data: {
+                hashedRt: null
+            }
+        })
 
+        return { msg: "ok" }
+    }
+
+    async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) throw new ForbiddenException('Unauthorized')
+
+        const isRefreshTokenValid = bcrypt.compare(refreshToken, user.hashedRt)
+
+        if (!isRefreshTokenValid) throw new ForbiddenException('Unauthorized')
+
+        const tokens = await this.getTokens(user.id, user.email)
+        await this.updateRefreshTokenHash(userId, tokens.refreshToken)
+        return tokens
+    }
+
+
+    async getMe(userId: number): Promise<getMeUser> {
+
+        const user = await this.prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) throw new ForbiddenException('Unauthorized')
+
+        return { id: user.id, email: user.email }
+    }
 
     async updateRefreshTokenHash(userId: number, refreshToken: string) {
         const hash = await this.hashData(refreshToken)
