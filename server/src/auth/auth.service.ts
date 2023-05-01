@@ -1,9 +1,10 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthDto } from './dto';
 import * as bcrypt from 'bcrypt'
-import { Tokens, getMeUser, jwtPayloadWithRt } from './types';
+import { Tokens, getMeUser } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
@@ -12,18 +13,28 @@ export class AuthService {
     async signup(dto: AuthDto): Promise<Tokens> {
         const hash = await this.hashData(dto.password)
 
-        const newUser = await this.prisma.user.create({
-            data: {
-                email: dto.email,
-                hash
+        try {
+            const newUser = await this.prisma.user.create({
+                data: {
+                    email: dto.email,
+                    hash
+                }
+            })
+
+            const tokens = await this.getTokens(newUser.id, newUser.email)
+
+            await this.updateRefreshTokenHash(newUser.id, tokens.refreshToken)
+
+            return tokens    
+        } catch (error: unknown) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === "P2002") {
+                    console.log('inside error',error)
+                    throw new BadRequestException('User with this email already exists')
+                }
             }
-        })
-
-        const tokens = await this.getTokens(newUser.id, newUser.email)
-
-        await this.updateRefreshTokenHash(newUser.id, tokens.refreshToken)
-
-        return tokens
+        }
+        
     }
 
     async signin(dto: AuthDto): Promise<Tokens> {
