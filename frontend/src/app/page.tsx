@@ -16,8 +16,8 @@ export default function Home() {
 
           In order to go to 
           <Link href='/dashboard' className="font-semibold"> dashboard </Link> page and send request you need to 
-          <Link href='/login' className="font-semibold"> login </Link>
-          or <Link href='/signup' className="font-semibold">signup</Link>
+          <Link href='/register?tab=login' className="font-semibold"> login </Link>
+          or <Link href='/register?tab=signup' className="font-semibold">signup</Link>
         </div>
 
         <div className="mt-8 text-lg hover:text-slate-700 flex gap-2 underline">
