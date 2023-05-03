@@ -5,6 +5,7 @@ import { Tokens, getMeUser } from './types';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 
 
@@ -32,7 +33,6 @@ export class AuthService {
         } catch (error: unknown) {
             if (error instanceof PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
-                    console.log('inside error',error)
                     throw new BadRequestException('User with this email already exists')
                 }
             }
@@ -75,6 +75,9 @@ export class AuthService {
     }
 
     async refreshToken(userId: number, refreshToken: string): Promise<Tokens> {
+        if(!refreshToken) {
+            throw new ForbiddenException('Unauthorized')
+        }
         const user = await this.prisma.user.findUnique({
             where: {
                 id: userId

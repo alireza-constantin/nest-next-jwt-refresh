@@ -7,14 +7,20 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-rt') {
     constructor(){
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromExtractors([(req: Request) => {
+                const refreshToken = req.cookies['jid']
+                if(!refreshToken) return null
+                return refreshToken
+            }]),
             secretOrKey: '12u3oijsadnsaSalJSD2kSJLKd',
             passReqToCallback: true
         })
     }
 
+
     validate(req:Request ,payload: any){
-        const refreshToken = req.get('authorization').replace('Bearer', '').trim()
+        
+        const refreshToken = req.cookies['jid']
         return { ...payload, refreshToken }
 }
 }

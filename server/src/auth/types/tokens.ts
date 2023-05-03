@@ -3,4 +3,4 @@ export type Tokens = {
     accessToken: string;
 }
 
-export type AccessToken = string
+export type AccessToken = { accessToken: string }
