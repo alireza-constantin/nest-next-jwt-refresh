@@ -6,6 +6,9 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+
+
+
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService, private jwt: JwtService) { }
@@ -123,7 +126,7 @@ export class AuthService {
 
         const refreshTokenPromise = this.jwt.signAsync({ sub: userId, email }, {
             secret: '12u3oijsadnsaSalJSD2kSJLKd',
-            expiresIn: '15d'
+            expiresIn: '15d',
         })
 
         const [accessToken, refreshToken] = await Promise.all([accessTokenPromise, refreshTokenPromise])

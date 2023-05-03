@@ -1,51 +1,83 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
-import { Tokens, getMeUser, jwtPayloadWithRt } from './types';
-import { accessTokenGuard } from 'src/common/guards/at.guard';
+import { AccessToken, Tokens, getMeUser } from './types';
 import { refreshTokenGuard } from 'src/common/guards/rt.guard';
-import { getCurrentUser, getCurrentUserId, Public,  } from 'src/common/decorators'
+import { getRefreshToken, getCurrentUserId, Public, } from 'src/common/decorators'
+import { CookieOptions, Response } from 'express';
+import { REFRESH_TOKEN_MAX_AGE, __isProd__ } from 'src/common/constants';
+
+
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: __isProd__ ? true : false,
+    expires: new Date(Date.now() + REFRESH_TOKEN_MAX_AGE),
+} satisfies CookieOptions
+
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService){}
+    constructor(private authService: AuthService) { }
 
     @Public()
     @Post('/signup')
     @HttpCode(HttpStatus.CREATED)
-    signup(@Body() dto: AuthDto): Promise<Tokens>{
-        console.log(dto)
-        return this.authService.signup(dto)
+    async signup(
+        @Body() dto: AuthDto,
+        @Res({ passthrough: true }) res: Response
+    ): Promise<AccessToken> {
+        const tokens = await this.authService.signup(dto)
+        res.cookie('jid', tokens.refreshToken, cookieOptions)
+        return tokens.accessToken
     }
 
     @Public()
     @Post('/signin')
     @HttpCode(HttpStatus.OK)
-    signin(@Body() dto: AuthDto): Promise<Tokens> { 
-        return this.authService.signin(dto)
-
+    async signin(
+        @Body() dto: AuthDto,
+        @Res({ passthrough: true }) res: Response
+    ): Promise<AccessToken> {
+        const tokens = await this.authService.signin(dto)
+        res.cookie('jid', tokens.refreshToken, cookieOptions)
+        return tokens.accessToken
     }
 
     @Get('/me')
     @HttpCode(HttpStatus.OK)
-    getMe(@getCurrentUserId() userId: number): Promise<getMeUser>{
+    getMe(@getCurrentUserId() userId: number): Promise<getMeUser> {
         return this.authService.getMe(userId)
     }
 
     @Post('/logout')
     @HttpCode(HttpStatus.OK)
-    logout(@getCurrentUserId() userId: number) {
+    async logout(
+        @getCurrentUserId() userId: number,
+        @Res({ passthrough: true }) res: Response
+    ) {
+        res.cookie('jid', '', {
+            httpOnly: true,
+            secure: __isProd__ ? true : false,
+        })
         return this.authService.logout(userId)
-     }
+    }
 
     @Public()
     @UseGuards(refreshTokenGuard)
     @Post('/refresh')
     @HttpCode(HttpStatus.OK)
-    refreshToken(
-        @getCurrentUser('refreshToken') refreshToken: string,
-        @getCurrentUserId() userId: number
-    ): Promise<Tokens> { 
-        return this.authService.refreshToken(userId, refreshToken) 
-     }
+    async refreshToken(
+        @getRefreshToken('jid') refreshToken: string,
+        @getCurrentUserId() userId: number,
+        @Res({ passthrough: true }) res: Response
+    ): Promise<AccessToken> {
+        const tokens = await this.authService.refreshToken(userId, refreshToken)
+        res.cookie('jit', tokens.refreshToken, {
+            httpOnly: true,
+            secure: __isProd__ ? true : false,
+            expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000), // set cookie to expire in 15 days
+        })
+        return tokens.accessToken
+    }
 }
