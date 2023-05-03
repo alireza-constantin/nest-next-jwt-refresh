@@ -4,7 +4,7 @@ import { GithubIcon } from 'lucide-react'
 export default function Home() {
   return (
     <main className="min-h-screen max-w-4xl mx-auto pt-20">
-      <div className="mx-auto">
+      <div className="mx-auto px-4">
         <h1 className="text-2xl font-semibold mb-6">A simple jsonwebtoken Auhtentication Template that uses</h1>
         <ul className="text-left text-lg text-secondary p-4 mt-4 bg-primary rounded-md" >
           <li>next 13 app directory as frontend</li>

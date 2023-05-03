@@ -39,6 +39,7 @@ export class AuthController {
         @Body() dto: AuthDto,
         @Res({ passthrough: true }) res: Response
     ): Promise<AccessToken> {
+        console.log(dto)
         const tokens = await this.authService.signin(dto)
         res.cookie('jid', tokens.refreshToken, cookieOptions)
         return { accessToken: tokens.accessToken }

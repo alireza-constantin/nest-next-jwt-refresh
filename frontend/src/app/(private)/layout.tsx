@@ -3,7 +3,7 @@ export const metadata = {
     description: 'Simple jsonwebtoken authentication for nestjs and nextjs',
 }
 
-export default function RootLayout({
+export default function Layout({
     children,
 }: {
     children: React.ReactNode
