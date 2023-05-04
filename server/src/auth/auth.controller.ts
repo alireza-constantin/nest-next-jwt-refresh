@@ -73,8 +73,6 @@ export class AuthController {
         @getCurrentUserId() userId: number,
         @Res({ passthrough: true }) res: Response
     ): Promise<AccessToken> {
-        console.log('userId', userId);
-        console.log('refreshToken', refreshToken)
         const tokens = await this.authService.refreshToken(userId, refreshToken)
         res.cookie('jid', tokens.refreshToken, {
             httpOnly: true,

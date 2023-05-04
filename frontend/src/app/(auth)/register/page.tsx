@@ -1,6 +1,5 @@
 "use client"
 
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { fetchReq } from "@/lib/apis";
 import { FormEvent } from "react";
@@ -8,16 +7,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { Signup } from "./signup";
 import { Login } from './login'
 import { useSearchParams } from 'next/navigation'
-import { error } from "console";
-
-
+import { accessToken } from "@/lib/constant";
 
 export default function Register() {
     const { toast } = useToast()
     // const router = useRouter()
     const searchParam = useSearchParams().get('tab')
-
-
+    
     async function onSignupSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const target = e.target as HTMLFormElement
@@ -29,7 +25,7 @@ export default function Register() {
                 body: {
                     email: target.email.value,
                     password: target.password.value
-                }
+                },
             })
 
             // do something with response data
@@ -59,10 +55,12 @@ export default function Register() {
                 body: {
                     email: target.email.value,
                     password: target.password.value
-                }
+                },
             })
+            console.log(res)
 
             // do something with response data
+            accessToken.setToken(res.accessToken)
 
         } catch (error: any) {
             if (error.cause satisfies ErrorResponse) {

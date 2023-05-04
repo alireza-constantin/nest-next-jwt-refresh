@@ -8,8 +8,6 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 
-
-
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService, private jwt: JwtService) { }
