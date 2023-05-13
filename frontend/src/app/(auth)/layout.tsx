@@ -1,39 +1,43 @@
 "use client"
 
-import { Toaster } from "@/components/ui/toaster";
-import React, { useEffect } from "react";
+import { Spinner } from "@/components/ui/Spinner"
+import { fetchReq } from "@/lib/apis"
+import { userAtom } from "@/lib/userAtom"
+import { Provider, useSetAtom } from "jotai"
+import { useEffect, useState } from "react"
 
-
-export default function Layout({
+export default function ({
     children
 }: {
     children: React.ReactNode
-}){
+}) {
+    const setUser = useSetAtom(userAtom)
+    const [loading, setLoading] = useState(false)
+    console.log('root ')
 
-    // const acToken = localStorage.getItem('at')
-    // const isValid = acToken && jwtDecode<{ sub: string, exp: number }>(acToken).exp > Date.now() / 1000
-    // console.log(isValid)
-    // async function getAccessToken(){
-    //     console.log('layout')
-    //     const res = await fetchReq({
-    //         url: '/refresh',
-    //         body: null,
-    //         method: 'POST'
-    //     })
-        
-    //     localStorage.setItem('at', res.accessToken)
+    async function getUser() {
+        setLoading(true)
+        const res = await fetchReq({
+            url: '/me',
+            method: 'GET',
+            auth: true,
+            body: null
+        })
 
-    // } 
-    
-    // useEffect(() => {
-    //     if(acToken && isValid) return
-    //     getAccessToken()
-    // }, [])
+        setUser(res)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        getUser()
+    }, [])
+
+    if(loading) return <div>loading...</div>
 
     return (
-        <>
-        <div>{children}</div>
-        <Toaster />
-        </>
+    <div> 
+        {children}
+    </div>
     )
+    
 }

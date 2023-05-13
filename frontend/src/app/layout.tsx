@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import './globals.css'
+import Providers from './../lib/atomProvider'
 
 export const metadata = {
   title: 'nest next auth jwt template',
@@ -30,7 +31,7 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
-        <div>{children}</div>
+        <div><Providers>{children}</Providers></div>
       </body>
     </html>
   )
