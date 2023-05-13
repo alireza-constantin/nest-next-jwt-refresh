@@ -21,7 +21,8 @@ export default function RootLayout({
               <div className='max-w-6xl flex justify-end gap-6 px-4'>
                 {[['Home', '/'],
                 ['Register', 'register'],
-                ['Dashboard', 'dashboard']]
+                ['Dashboard', 'dashboard'],
+                ]
                   .map(([title, url]) => <Link key={url} className='hover:text-slate-600'
                     href={url}>{title}</Link>)
                 }

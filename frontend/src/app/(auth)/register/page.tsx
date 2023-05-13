@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Signup } from "./signup";
 import { Login } from './login'
 import { useSearchParams } from 'next/navigation'
-import { accessToken } from "@/lib/constant";
+import { accessToken } from "@/lib/utils";
 
 export default function Register() {
     const { toast } = useToast()
@@ -29,7 +29,7 @@ export default function Register() {
             })
 
             // do something with response data
-
+            accessToken.setToken(res.accessToken)
         } catch (error: any) {
             if (error.cause satisfies ErrorResponse) {
                 toast({
