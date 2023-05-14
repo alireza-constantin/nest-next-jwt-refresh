@@ -11,7 +11,8 @@ Although the app is currently functioning well, there are many possibilities for
 
 ## Tech Stack
 
-**React, Nextjs, Typescript, Jotai, Prisma, TailwindCSS, S**
+Frontend: **React, Nextjs, Typescript, Jotai, TailwindCSS**
+Backend: **Nestjs, Typescript, Passport, Prisma, Bcrypt**
 
 **DB:** Postgresql
 
