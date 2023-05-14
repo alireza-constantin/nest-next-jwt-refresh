@@ -26,10 +26,10 @@ export class AuthController {
     async signup(
         @Body() dto: AuthDto,
         @Res({ passthrough: true }) res: Response
-    ): Promise<AccessToken> {
-        const tokens = await this.authService.signup(dto)
-        res.cookie('jid', tokens.refreshToken, cookieOptions)
-        return { accessToken: tokens.accessToken }
+    ): Promise<AccessToken & getMeUser> {
+        const data = await this.authService.signup(dto)
+        res.cookie('jid', data.refreshToken, cookieOptions)
+        return { accessToken: data.accessToken, email: data.email, id: data.id }
     }
 
     @Public()
@@ -38,11 +38,11 @@ export class AuthController {
     async signin(
         @Body() dto: AuthDto,
         @Res({ passthrough: true }) res: Response
-    ): Promise<AccessToken> {
+    ): Promise<AccessToken & getMeUser> {
         console.log(dto)
-        const tokens = await this.authService.signin(dto)
-        res.cookie('jid', tokens.refreshToken, cookieOptions)
-        return { accessToken: tokens.accessToken }
+        const data = await this.authService.signin(dto)
+        res.cookie('jid', data.refreshToken, cookieOptions)
+        return { accessToken: data.accessToken, email: data.email, id: data.id }
     }
 
     @Get('/me')
