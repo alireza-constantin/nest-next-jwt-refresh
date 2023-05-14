@@ -3,7 +3,7 @@
 import { Spinner } from "@/components/ui/Spinner"
 import { fetchReq } from "@/lib/apis"
 import { userAtom } from "@/lib/userAtom"
-import { Provider, useSetAtom } from "jotai"
+import { useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
 
 export default function ({
@@ -13,18 +13,20 @@ export default function ({
 }) {
     const setUser = useSetAtom(userAtom)
     const [loading, setLoading] = useState(false)
-    console.log('root ')
 
     async function getUser() {
         setLoading(true)
-        const res = await fetchReq({
-            url: '/me',
-            method: 'GET',
-            auth: true,
-            body: null
-        })
-
-        setUser(res)
+        try {
+            const res = await fetchReq({
+                url: '/me',
+                method: 'GET',
+                auth: true,
+                body: null
+            })
+            setUser(res)
+        } catch (error) {
+            
+        }
         setLoading(false)
     }
 
@@ -32,12 +34,16 @@ export default function ({
         getUser()
     }, [])
 
-    if(loading) return <div>loading...</div>
+    if (loading) return (
+        <div className="text-center mt-20">
+            <Spinner />
+        </div>
+    )
 
     return (
-    <div> 
-        {children}
-    </div>
+        <div>
+            {children}
+        </div>
     )
-    
+
 }

@@ -17,12 +17,15 @@ export default function Layout({
     if (user) {
         return (
             <div className="text-center mt-20 text-lg">
-                <span className="text-lg font-semibold pr-1">
-                    {user.email} 
-                </span>
-                you already logged in.
-                you can go to <Link href='/dashboard' className="font-semibold"> dashboard </Link>
-                page if you want</div>
+                <div className="text-center  text-primary">
+                    user: <span className="font-semibold">{user.email}</span>
+                </div>
+                <div className="text-lg text-secondary p-4 mt-4 bg-primary rounded-md">
+                    you already logged in.
+                    you can go to <Link href='/dashboard' className="font-semibold"> dashboard </Link>
+                    page if you want
+                </div>
+            </div>
         )
     }
 

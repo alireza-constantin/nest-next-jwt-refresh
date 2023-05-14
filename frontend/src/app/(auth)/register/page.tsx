@@ -8,10 +8,14 @@ import { Signup } from "./signup";
 import { Login } from './login'
 import { useSearchParams } from 'next/navigation'
 import { accessToken } from "@/lib/utils";
+import { useSetAtom } from "jotai";
+import { userAtom } from "@/lib/userAtom";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
     const { toast } = useToast()
-    // const router = useRouter()
+    const router = useRouter()
+    const setUser = useSetAtom(userAtom);
     const searchParam = useSearchParams().get('tab')
     
     async function onSignupSubmit(e: FormEvent<HTMLFormElement>) {
@@ -57,10 +61,10 @@ export default function Register() {
                     password: target.password.value
                 },
             })
-            console.log(res)
-
             // do something with response data
+            setUser({ email: res.email, id: res.id })
             accessToken.setToken(res.accessToken)
+            router.push('/dashboard')
 
         } catch (error: any) {
             if (error.cause satisfies ErrorResponse) {

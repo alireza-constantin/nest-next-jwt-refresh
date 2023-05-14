@@ -12,6 +12,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
     <html lang="en">
       <body>
@@ -31,7 +32,7 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
-        <div><Providers>{children}</Providers></div>
+        <div className='min-h-screen max-w-4xl mx-auto'><Providers>{children}</Providers></div>
       </body>
     </html>
   )

@@ -27,7 +27,7 @@ export class AuthController {
         @Body() dto: AuthDto,
         @Res({ passthrough: true }) res: Response
     ): Promise<AccessToken & getMeUser> {
-        const data = await this.authService.signup(dto)
+        const data = await this.authService.signup(dto);
         res.cookie('jid', data.refreshToken, cookieOptions)
         return { accessToken: data.accessToken, email: data.email, id: data.id }
     }

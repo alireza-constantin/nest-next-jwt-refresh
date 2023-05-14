@@ -42,6 +42,7 @@ export async function fetchReq({ url, method, body, auth = false }: FetchReq) {
     const data = await res.json()
 
     if (!res.ok) {
+        console.log(data)
         throw new Error('something went wrong', { cause: data })
     }
 
