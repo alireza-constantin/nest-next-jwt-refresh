@@ -7,7 +7,7 @@ export class AtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(){
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: '120SJDHue9jiosdaml;1asdl;asdpeokSAJKLDjKAd',
+            secretOrKey: process.env.ACCESS_TOKEN_SECRET,
         })
     }
 

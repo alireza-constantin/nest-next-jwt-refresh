@@ -133,12 +133,12 @@ export class AuthService {
     email: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessTokenPromise = this.jwt.signAsync({ sub: userId, email }, {
-      secret: "120SJDHue9jiosdaml;1asdl;asdpeokSAJKLDjKAd",
+      secret: process.env.ACCESS_TOKEN_SECRET,
       expiresIn: 60 * 15,
     });
 
     const refreshTokenPromise = this.jwt.signAsync({ sub: userId, email }, {
-      secret: "12u3oijsadnsaSalJSD2kSJLKd",
+      secret: process.env.REFRESH_TOKEN_SECRET,
       expiresIn: "15d",
     });
 

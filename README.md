@@ -36,6 +36,8 @@ then enter your database url to these variable in .env file
 
 ```code
     DATABASE_URL=
+    ACCESS_TOKEN_SECRET=
+    REFRESH_TOKEN_SECRET=
 ```
 
 Start the development server
